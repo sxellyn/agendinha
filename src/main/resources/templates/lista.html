@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Contatos</title>
+</head>
+<body>
+    <h1>Meus Contatos</h1>
+    <form th:action="@{/contatos}" method="get">
+        <input type="text" name="nome" placeholder="Pesquisar por nome">
+        <button type="submit">Buscar</button>
+    </form>
+    <ul>
+        <li th:each="contato : ${contatos}">
+            <span th:text="${contato.nome}"></span> - 
+            <span th:text="${contato.email}"></span> - 
+            <span th:text="${contato.telefones}"></span>
+        </li>
+    </ul>
+    <a href="/contatos/novo">Adicionar Contato</a>
+</body>
+</html>

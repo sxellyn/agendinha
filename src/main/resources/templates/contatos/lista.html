@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Meus Contatos - Agendinha</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+        .btn-primary {
+            background-color: #2196F3;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+        }
+        .btn-edit {
+            background-color: #ffc107;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Meus Contatos</h1>
+            <a th:href="@{/contatos/novo}" class="btn btn-primary">Novo Contato</a>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="contato : ${contatos}">
+                    <td th:text="${contato.nome}"></td>
+                    <td th:text="${contato.email}"></td>
+                    <td th:text="${contato.telefone}"></td>
+                    <td class="actions">
+                        <a th:href="@{/contatos/editar/{id}(id=${contato.id})}" 
+                           class="btn btn-edit">Editar</a>
+                        <a th:href="@{/contatos/excluir/{id}(id=${contato.id})}" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('Tem certeza que deseja excluir este contato?')">
+                            Excluir
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html> 
