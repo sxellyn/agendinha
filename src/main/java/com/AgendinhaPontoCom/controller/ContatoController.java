@@ -1,6 +1,8 @@
 package com.AgendinhaPontoCom.controller;
 
 import com.AgendinhaPontoCom.model.Contato;
+import com.AgendinhaPontoCom.model.Endereco;
+import com.AgendinhaPontoCom.model.Telefone;
 import com.AgendinhaPontoCom.model.Usuario;
 import com.AgendinhaPontoCom.service.ContatoService;
 import com.AgendinhaPontoCom.service.UsuarioService;
@@ -11,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -53,18 +56,48 @@ public class ContatoController {
 
     @GetMapping("/novo")
     public String novoContato(Model model) {
-        model.addAttribute("contato", new Contato());
-        return "contatos/form";
+        try {
+            // Obter usuário logado
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Usuario usuario = usuarioService.buscarPorEmail(auth.getName());
+            
+            // Criar novo contato
+            Contato contato = new Contato();
+            contato.setEndereco(new Endereco());
+            contato.setTelefones(new ArrayList<>());
+            contato.getTelefones().add(new Telefone());
+            
+            // Adicionar atributos ao modelo
+            model.addAttribute("contato", contato);
+            model.addAttribute("usuarioNome", usuario.getNome());
+            model.addAttribute("usuario", usuario);
+            
+            return "contatos/form";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("erro", "Erro ao carregar formulário: " + e.getMessage());
+            return "redirect:/contatos";
+        }
     }
 
     @PostMapping("/salvar")
     public String salvarContato(@ModelAttribute Contato contato, RedirectAttributes redirectAttributes) {
         try {
             String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            Usuario usuario = usuarioService.buscarPorEmail(email);
+            contato.setUsuario(usuario);
+            
+            // Remove telefones vazios
+            if (contato.getTelefones() != null) {
+                contato.getTelefones().removeIf(telefone -> 
+                    telefone.getNumero() == null || telefone.getNumero().trim().isEmpty());
+            }
+            
             contatoService.salvarContato(contato, email);
             redirectAttributes.addFlashAttribute("mensagem", "Contato salvo com sucesso!");
             return "redirect:/contatos";
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("erro", "Erro ao salvar contato: " + e.getMessage());
             return "redirect:/contatos/novo";
         }

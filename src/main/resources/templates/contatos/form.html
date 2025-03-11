@@ -1,85 +1,300 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Contato - Agendinha</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novo Contato - Agendinha.com</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            background-color: #343a40;
+            padding: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .nav-menu {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: #fff;
+            padding: 15px 25px;
+            transition: all 0.3s;
+        }
+
+        .nav-link:hover {
+            background-color: #495057;
+            color: #fff;
+        }
+
+        .nav-link.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .logo-section {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #495057;
+        }
+
+        .user-section {
+            padding: 15px;
+            border-top: 1px solid #495057;
+            background-color: #2c3136;
+        }
+
+        .form-card {
             background-color: white;
-            padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .form-group {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 25px;
             margin-bottom: 20px;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-        }
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
             border-radius: 4px;
-            box-sizing: border-box;
+            background-color: #f8f9fa;
         }
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            color: white;
+
+        .form-section legend {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: #495057;
         }
-        .btn-primary {
-            background-color: #2196F3;
-        }
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        .buttons {
+
+        .telefone-item {
             display: flex;
             gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .btn-add-telefone {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-add-telefone:hover {
+            background-color: #218838;
+        }
+
+        .btn-remove-telefone {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-remove-telefone:hover {
+            background-color: #c82333;
+        }
+
+        .actions {
+            display: flex;
             justify-content: flex-end;
+            gap: 10px;
             margin-top: 20px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .user-info i {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+
+        .user-info span {
+            color: #fff;
+            font-size: 0.9em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 150px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 th:text="${contato.id == null ? 'Novo Contato' : 'Editar Contato'}"></h1>
-        
-        <form th:action="@{/contatos/salvar}" method="post" th:object="${contato}">
-            <input type="hidden" th:field="*{id}">
-            
-            <div class="form-group">
-                <label for="nome">Nome:</label>
-                <input type="text" th:field="*{nome}" required>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo-section">
+            <h4 class="text-white mb-0">Agendinha.com</h4>
+        </div>
+
+        <div class="nav-menu">
+            <nav class="nav flex-column">
+                <a class="nav-link active" href="/contatos">
+                    <i class="fas fa-address-book"></i> Contatos
+                </a>
+                <a class="nav-link" href="/perfil">
+                    <i class="fas fa-user"></i> Meu Perfil
+                </a>
+            </nav>
+        </div>
+
+        <div class="user-section">
+            <div class="user-info d-flex align-items-center">
+                <i class="fas fa-user-circle fa-2x"></i>
+                <span class="ml-2 text-white" th:text="${usuarioNome}">Usuário</span>
             </div>
-            
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" th:field="*{email}">
-            </div>
-            
-            <div class="form-group">
-                <label for="telefone">Telefone:</label>
-                <input type="tel" th:field="*{telefone}">
-            </div>
-            
-            <div class="buttons">
-                <a th:href="@{/contatos}" class="btn btn-secondary">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Salvar</button>
-            </div>
-        </form>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn btn-outline-light btn-sm w-100 mt-2">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </form>
+        </div>
     </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="form-card">
+                        <h2 class="mb-4">
+                            <i class="fas fa-user-plus"></i>
+                            <span th:text="${contato.id == null ? 'Novo Contato' : 'Editar Contato'}"></span>
+                        </h2>
+
+                        <form th:action="@{/contatos/salvar}" method="post" th:object="${contato}">
+                            <input type="hidden" th:field="*{id}">
+
+                            <!-- Informações Básicas -->
+                            <div class="form-section">
+                                <legend><i class="fas fa-info-circle"></i> Informações Básicas</legend>
+                                <div class="form-group">
+                                    <label for="nome">Nome:</label>
+                                    <input type="text" class="form-control" th:field="*{nome}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" class="form-control" th:field="*{email}" required>
+                                </div>
+                            </div>
+
+                            <!-- Endereço -->
+                            <div class="form-section">
+                                <legend><i class="fas fa-map-marker-alt"></i> Endereço</legend>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label>Rua:</label>
+                                            <input type="text" class="form-control" th:field="*{endereco.rua}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Número:</label>
+                                            <input type="text" class="form-control" th:field="*{endereco.numero}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Cidade:</label>
+                                            <input type="text" class="form-control" th:field="*{endereco.cidade}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Estado:</label>
+                                            <input type="text" class="form-control" th:field="*{endereco.estado}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Telefones -->
+                            <div class="form-section">
+                                <legend><i class="fas fa-phone"></i> Telefones</legend>
+                                <div id="telefones">
+                                    <div th:each="telefone, stat : *{telefones}" class="telefone-item">
+                                        <input type="text" th:field="*{telefones[__${stat.index}__].numero}" 
+                                               class="form-control" placeholder="Número do telefone">
+                                        <button type="button" class="btn-remove-telefone" onclick="removeTelefone(this)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-add-telefone mt-3" onclick="adicionarTelefone()">
+                                    <i class="fas fa-plus"></i> Adicionar Telefone
+                                </button>
+                            </div>
+
+                            <!-- Botões de Ação -->
+                            <div class="actions">
+                                <a th:href="@{/contatos}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function adicionarTelefone() {
+            const telefonesDiv = document.getElementById('telefones');
+            const index = telefonesDiv.children.length;
+            const novoTelefone = document.createElement('div');
+            novoTelefone.className = 'telefone-item';
+            novoTelefone.innerHTML = `
+                <input type="text" name="telefones[${index}].numero" 
+                       class="form-control" placeholder="Número do telefone">
+                <button type="button" class="btn-remove-telefone" onclick="removeTelefone(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+            telefonesDiv.appendChild(novoTelefone);
+        }
+        
+        function removeTelefone(button) {
+            button.parentElement.remove();
+        }
+    </script>
 </body>
 </html> 

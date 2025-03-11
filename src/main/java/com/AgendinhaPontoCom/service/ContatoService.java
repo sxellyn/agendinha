@@ -41,6 +41,12 @@ public class ContatoService {
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         contato.setUsuario(usuario);
+        
+        if (contato.getTelefones() != null) {
+            contato.getTelefones().removeIf(telefone -> 
+                telefone.getNumero() == null || telefone.getNumero().trim().isEmpty());
+        }
+        
         return contatoRepository.save(contato);
     }
 

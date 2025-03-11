@@ -182,7 +182,8 @@
                         </p>
                         <p class="card-text">
                             <i class="fas fa-phone"></i> 
-                            <span th:text="${contato.telefone}"></span>
+                            <span th:if="${!contato.telefones.empty}" th:text="${contato.telefones[0].numero}"></span>
+                            <span th:if="${contato.telefones.empty}">Sem telefone</span>
                         </p>
                     </div>
                     <div class="card-footer bg-white">
